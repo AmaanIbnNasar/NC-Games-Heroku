@@ -1,6 +1,7 @@
 exports.psqlErrors = (err, req, res, next) => {
   const errorCodes = {
     "22P02": { status: 400, msg: `Bad request` },
+    23503: { status: 400, msg: "Bad request" },
   };
   if (errorCodes.hasOwnProperty(err.code)) {
     res

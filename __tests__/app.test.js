@@ -65,6 +65,55 @@ describe("app", () => {
                 expect(body.msg).toEqual("Bad request");
               });
           });
+          it("404 responds with not found when given a non existant review id", () => {
+            return request(app)
+              .get("/api/reviews/99999/comments")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toEqual(`Review id 99999 does not exist`);
+              });
+          });
+        });
+        describe("POST", () => {
+          it("200 responds with the comment", () => {
+            const newComment = {
+              username: "mallionaire",
+              body: "great",
+            };
+            return request(app)
+              .post("/api/reviews/1/comments")
+              .send(newComment)
+              .expect(201)
+              .then(({ body }) => {
+                expect(body.comment).toMatchObject({
+                  comment_id: 7,
+                  body: "great",
+                  author: "mallionaire",
+                });
+              });
+          });
+          it("400 responds with bad request when given a request with an invalid body", () => {
+            const newComment = {
+              username: "invalid_user",
+              body: "great",
+            };
+            return request(app)
+              .post("/api/reviews/1/comments")
+              .send(newComment)
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toEqual("Bad request");
+              });
+          });
+          it("400 responds with bad request when given an invalid request", () => {
+            return request(app)
+              .post("/api/reviews/1/comments")
+              .send({})
+              .expect(400)
+              .then(({ body }) => {
+                expect(body.msg).toEqual("Bad request: missing properties");
+              });
+          });
         });
       });
     });

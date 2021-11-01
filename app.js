@@ -14,4 +14,8 @@ app.use("/*", (req, res) => {
 app.use(psqlErrors);
 app.use(customErrors);
 
+app.use((err, req, res, next) => {
+  console.log(err);
+});
+
 module.exports = app;
