@@ -18,4 +18,21 @@ describe("app", () => {
         });
     });
   });
+  describe("/api/categories", () => {
+    describe("GET", () => {
+      it("200 responds with an array of category objects", () => {
+        return request(app)
+          .get("/api/categories")
+          .expect(200)
+          .then(({ body }) => {
+            body.categories.forEach((category) => {
+              expect(category).toMatchObject({
+                slug: expect.any(String),
+                description: expect.any(String),
+              });
+            });
+          });
+      });
+    });
+  });
 });
