@@ -9,12 +9,48 @@ afterAll(() => db.end());
 
 describe("app", () => {
   describe("/api", () => {
-    it("200 responds with a message saying all okay", () => {
+    it("200 responds with a list of all available endpoints", () => {
       return request(app)
         .get("/api")
         .expect(200)
         .then(({ body }) => {
-          expect(body.msg).toEqual("All okay");
+          expect(body.endpoints).toMatchObject({
+            "GET /api": {
+              description:
+                "serves up a json representation of all the available endpoints of the api",
+            },
+            "GET /api/categories": {
+              description: "serves an array of all categories",
+              queries: [],
+              exampleResponse: {
+                categories: [
+                  {
+                    description:
+                      "Players attempt to uncover each other's hidden role",
+                    slug: "Social deduction",
+                  },
+                ],
+              },
+            },
+            "GET /api/reviews": {
+              description: "serves an array of all reviews",
+              queries: ["category", "sort_by", "order"],
+              exampleResponse: {
+                reviews: [
+                  {
+                    title: "One Night Ultimate Werewolf",
+                    designer: "Akihisa Okui",
+                    owner: "happyamy2016",
+                    review_img_url:
+                      "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                    category: "hidden-roles",
+                    created_at: 1610964101251,
+                    votes: 5,
+                  },
+                ],
+              },
+            },
+          });
         });
     });
   });
@@ -112,6 +148,32 @@ describe("app", () => {
               .expect(400)
               .then(({ body }) => {
                 expect(body.msg).toEqual("Bad request: missing properties");
+              });
+          });
+          it("404 responds with not found when given a non existant request", () => {
+            const newComment = {
+              username: "invalid_user",
+              body: "great",
+            };
+            return request(app)
+              .post("/api/reviews/9999/comments")
+              .send(newComment)
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toEqual("Review id 9999 does not exist");
+              });
+          });
+        });
+        describe("DELETE", () => {
+          it("204 responds with 204 when given a comment to delete", () => {
+            return request(app).delete("/api/comments/1").expect(204);
+          });
+          it("404 responds with no found when given a comment that does not exist", () => {
+            return request(app)
+              .delete("/api/comments/9999")
+              .expect(404)
+              .then(({ body }) => {
+                expect(body.msg).toEqual("Comment id 9999 does not exist");
               });
           });
         });
