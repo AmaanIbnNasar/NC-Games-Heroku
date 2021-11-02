@@ -322,14 +322,6 @@ describe("app", () => {
         });
       });
   });
-  it("200 responds with an empty array when given a category that doesn't exist", () => {
-    return request(app)
-      .get("/api/reviews")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.reviews.length).toEqual(0);
-      });
-  });
   it("400 responds with bad request when given invalid sort by", () => {
     return request(app)
       .get("/api/reviews")
