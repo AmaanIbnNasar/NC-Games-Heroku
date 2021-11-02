@@ -7,6 +7,9 @@ const {
 exports.getReviews = async (req, res, next) => {
   try {
     let { sort_by, order, category } = req.query;
+    if (!category) {
+      category = "";
+    }
     if (!order) {
       order = "DESC";
     } else if (!["ASC", "asc", "DESC", "desc"].includes(order)) {
@@ -31,7 +34,7 @@ exports.getReviews = async (req, res, next) => {
     ) {
       throw { status: 400, msg: `Bad request: invalid sort column ${sort_by}` };
     }
-    const reviews = await selectReviews(sort_by, order, category);
+    const reviews = await selectReviews(sort_by, order, "%" + category + "%");
     res.status(200).send({ reviews });
   } catch (err) {
     next(err);

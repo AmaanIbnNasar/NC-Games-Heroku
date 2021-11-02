@@ -5,7 +5,7 @@ exports.selectReviews = async (sort_by, order, category) => {
     `SELECT reviews.*, COUNT(comment_id)::int AS comment_count 
         FROM reviews 
         LEFT JOIN comments ON comments.review_id = reviews.review_id 
-        WHERE category = $1
+        WHERE category LIKE $1
         GROUP BY reviews.review_id 
         ORDER BY ${sort_by} ${order};`,
     [category]
